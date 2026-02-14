@@ -224,7 +224,16 @@ h3 {
     }
 }
 
-@media (max-width: 600px) {
+/* Tablet (768px and below) */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+    }
+
+    header {
+        margin-bottom: 25px;
+    }
+
     header h1 {
         font-size: 36px;
     }
@@ -234,15 +243,249 @@ h3 {
         gap: 20px;
     }
 
+    .enemy-section, .player-section {
+        padding: 18px;
+    }
+
+    .enemy-image {
+        max-width: 200px;
+        margin: 0 auto 15px;
+    }
+
+    h2 {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+
+    h3 {
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .stats-box {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    .stat {
+        font-size: 15px;
+        margin-bottom: 8px;
+    }
+
     .cards-hand {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .card {
+        min-height: 120px;
+        padding: 12px;
+    }
+
+    .card img {
+        max-width: 60px;
+        max-height: 60px;
+    }
+
+    .card-name {
+        font-size: 13px;
+    }
+
+    .card-damage {
+        font-size: 11px;
+    }
+
+    .game-log {
+        max-height: 100px;
+        padding: 10px;
+        font-size: 12px;
+    }
+
+    .btn-primary {
+        padding: 10px 25px;
+        font-size: 15px;
+        flex: 1;
+        min-width: 140px;
     }
 
     .actions {
+        flex-direction: row;
+        gap: 10px;
+        justify-content: center;
+    }
+}
+
+/* Mobile (480px and below) */
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        max-width: 100%;
+    }
+
+    header {
+        margin-bottom: 20px;
+    }
+
+    header h1 {
+        font-size: 28px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+    }
+
+    .game-board {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .enemy-section, .player-section {
+        padding: 15px;
+    }
+
+    .enemy-image {
+        max-width: 150px;
+        margin: 0 auto 12px;
+    }
+
+    h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+
+    h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .stats-box {
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+    .stat {
+        font-size: 13px;
         flex-direction: column;
+        gap: 4px;
+        margin-bottom: 6px;
+    }
+
+    .stat span:first-child {
+        margin-right: 0;
+    }
+
+    .stat span:last-child {
+        font-size: 16px;
+    }
+
+    .game-log-section {
+        margin-bottom: 15px;
+    }
+
+    .game-log {
+        max-height: 80px;
+        padding: 8px;
+        font-size: 11px;
+    }
+
+    .log-entry {
+        padding: 3px 0;
+    }
+
+    .hand-section {
+        margin-top: 12px;
+    }
+
+    .cards-hand {
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .card {
+        min-height: 100px;
+        padding: 8px;
+        border: 1.5px solid white;
+    }
+
+    .card img {
+        max-width: 45px;
+        max-height: 45px;
+    }
+
+    .card-name {
+        font-size: 11px;
+    }
+
+    .card-damage {
+        font-size: 9px;
+        margin-top: 2px !important;
+    }
+
+    .card:hover {
+        transform: translateY(-3px);
     }
 
     .btn-primary {
         width: 100%;
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* Extra small (320px and below) */
+@media (max-width: 320px) {
+    header h1 {
+        font-size: 22px;
+    }
+
+    .game-board {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .enemy-image {
+        max-width: 120px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    h3 {
+        font-size: 13px;
+    }
+
+    .stat {
+        font-size: 12px;
+    }
+
+    .cards-hand {
+        grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+        gap: 6px;
+    }
+
+    .card {
+        min-height: 90px;
+        padding: 6px;
+    }
+
+    .card img {
+        max-width: 40px;
+        max-height: 40px;
+    }
+
+    .card-name {
+        font-size: 10px;
+    }
+
+    .card-damage {
+        font-size: 8px;
     }
 }

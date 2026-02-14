@@ -189,6 +189,7 @@ function playCardHandler(cardIndex) {
         return;
     }
 
+    console.log(`Player HP: ${player.health}/${player.maxHealth}`);
     gameState.turn++;
     updateStats();
     renderHand();
@@ -233,6 +234,7 @@ function drawCardHandler() {
             deck.addCard(card);
             return;
         }
+        console.log(deck);
         addLog(`Drew: ${card.name}`);
         renderHand();
         updateStats();
