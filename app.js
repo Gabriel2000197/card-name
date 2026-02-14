@@ -53,42 +53,31 @@ function showStatus(player, enemy) {
     console.log(`${player.name}: ${player.health} HP | ${enemy.name}: ${enemy.health} HP`);
 }
 
-// Game setup
-const player = new Player("Hero", 30);
-const enemy = new Enemy("Goblin", 20);
-
-player.drawCard(new Card("Attack", attackEffect));
-player.drawCard(new Card("Heal", healEffect));
-
-showStatus(player, enemy);
-player.playCard(0, enemy);
-showStatus(player, enemy);
-player.playCard(0, enemy);
-showStatus(player, enemy);
-player.playCard(0, enemy);
-showStatus(player, enemy);  
-
-// create a deck sistem with multiple card with different powers and effects as cards object, the player can draw cards from the deck and play them against the enemy, the game should end when either the player or the enemy's health reaches 0.
-
+// Deck class
 class Deck {
     constructor() {
         this.cards = [];
     }
-    
+
     addCard(card) {
         this.cards.push(card);
     }
 
     drawCard() {
-        if (this.cards.length === 0) {
-            return null;
-        }
-        return this.cards.pop();
+        if (this.cards.length === 0) return null;
+        const randomIndex = Math.floor(Math.random() * this.cards.length);
+        const card = this.cards[randomIndex];
+        this.cards.splice(randomIndex, 1);
+        return card;
     }
 }
 
-// Create a deck and add cards to it
+// Initialize game
+const player = new Player("Hero", 30);
+const enemy = new Enemy("Goblin", 20);
+
 const deck = new Deck();
+deck.addCard(new Card("Attack", attackEffect));
 deck.addCard(new Card("Attack", attackEffect));
 deck.addCard(new Card("Heal", healEffect));
 deck.addCard(new Card("Strong Attack", (player, enemy) => {
@@ -97,7 +86,64 @@ deck.addCard(new Card("Strong Attack", (player, enemy) => {
     console.log(`${player.name} performs a strong attack on ${enemy.name} for ${damage} damage!`);
 }));
 
-// Player draws cards from the deck
+// UI Updates
+function updateStats() {
+    document.getElementById("player-health").textContent = player.health;
+    document.getElementById("enemy-health").textContent = enemy.health;
+}
+
+function renderHand() {
+    const cardsContainer = document.getElementById("cardsHand");
+    cardsContainer.innerHTML = "";
+
+    player.hand.forEach((card, index) => {
+        const cardElement = document.createElement("div");
+        cardElement.className = "card";
+        cardElement.textContent = card.name;
+        cardElement.onclick = () => playCardHandler(index);
+        cardsContainer.appendChild(cardElement);
+    });
+}
+
+function playCardHandler(cardIndex) {
+    if (enemy.health <= 0 || player.health <= 0) {
+        alert("Game Over!");
+        return;
+    }
+    player.playCard(cardIndex, enemy);
+    updateStats();
+    renderHand();
+    checkGameEnd();
+}
+
+function drawCardHandler() {
+    if (deck.cards.length === 0) {
+        alert("No more cards in deck!");
+        return;
+    }
+    const card = deck.drawCard();
+    if (card) {
+        player.drawCard(card);
+        renderHand();
+    }
+}
+
+function checkGameEnd() {
+    if (player.health <= 0) {
+        alert("Game Over! Enemy wins!");
+        location.reload();
+    } else if (enemy.health <= 0) {
+        alert("Victory! You defeated the enemy!");
+        location.reload();
+    }
+}
+
+// Event listeners
+document.getElementById("drawCardBtn").addEventListener("click", drawCardHandler);
+
+// Initial render
+updateStats();
+renderHand();
 player.drawCard(deck.drawCard());
 player.drawCard(deck.drawCard());
 player.drawCard(deck.drawCard());

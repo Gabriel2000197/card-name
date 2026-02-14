@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Dungeon Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Card Dungeon</h1>
+        </header>
+
+        <div class="game-board">
+            <!-- Enemy Section -->
+            <div class="enemy-section">
+                <h2 id="enemy-name">Enemy</h2>
+                <div class="stats-box">
+                    <div class="stat">
+                        <span>Health:</span>
+                        <span id="enemy-health">20</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Section -->
+            <div class="player-section">
+                <h2 id="player-name">Hero</h2>
+                <div class="stats-box">
+                    <div class="stat">
+                        <span>Health:</span>
+                        <span id="player-health">30</span>
+                    </div>
+                </div>
+
+                <!-- Hand Section -->
+                <div class="hand-section">
+                    <h3>Your Hand</h3>
+                    <div class="cards-hand" id="cardsHand">
+                        <!-- Cards will be generated here -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="actions">
+                    <button class="btn-primary" id="drawCardBtn">Draw Card</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
