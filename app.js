@@ -99,7 +99,16 @@ function renderHand() {
     player.hand.forEach((card, index) => {
         const cardElement = document.createElement("div");
         cardElement.className = "card";
-        cardElement.textContent = card.name;
+        
+        const cardImage = document.createElement("img");
+        cardImage.src = "assets/Weapons_0010_Capa-8_0.png";
+        cardImage.alt = card.name;
+        
+        const cardName = document.createElement("p");
+        cardName.textContent = card.name;
+        
+        cardElement.appendChild(cardImage);
+        cardElement.appendChild(cardName);
         cardElement.onclick = () => playCardHandler(index);
         cardsContainer.appendChild(cardElement);
     });
