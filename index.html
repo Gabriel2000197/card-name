@@ -15,14 +15,14 @@
         <div class="game-board">
             <!-- Enemy Section -->
             <div class="enemy-section">
-                <h2 id="enemy-name">Enemy</h2>
+                <h2 id="enemy-name">Goblin</h2>
                 <div class="enemy-image">
                     <img src="assets/Monster.png" alt="Enemy">
                 </div>
                 <div class="stats-box">
                     <div class="stat">
                         <span>Health:</span>
-                        <span id="enemy-health">20</span>
+                        <span id="enemy-health">25/25</span>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,23 @@
                 <div class="stats-box">
                     <div class="stat">
                         <span>Health:</span>
-                        <span id="player-health">30</span>
+                        <span id="player-health">35/35</span>
+                    </div>
+                    <div class="stat">
+                        <span>Turn:</span>
+                        <span id="turn-counter">Turn: 0/20</span>
+                    </div>
+                    <div class="stat">
+                        <span id="hand-size">Hand: 0/5</span>
+                        <span id="deck-size">Deck: 12</span>
+                    </div>
+                </div>
+
+                <!-- Game Log -->
+                <div class="game-log-section">
+                    <h3>Battle Log</h3>
+                    <div class="game-log" id="game-log">
+                        <!-- Battle messages will appear here -->
                     </div>
                 </div>
 

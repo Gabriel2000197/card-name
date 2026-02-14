@@ -1,38 +1,54 @@
 // Card dungeon game with turn-based combat
 class Card {
-    constructor(name, effect) {
+    constructor(name, effect, damage, type = "attack") {
         this.name = name;
         this.effect = effect;
+        this.damage = damage;
+        this.type = type; // "attack" or "heal"
     }
 }
 
 class Player {
-    constructor(name, health) {
+    constructor(name, health, maxHealth = health) {
         this.name = name;
         this.health = health;
+        this.maxHealth = maxHealth;
         this.hand = [];
+        this.maxHandSize = 5;
     }
 
     drawCard(card) {
-        this.hand.push(card);
+        if (this.hand.length < this.maxHandSize) {
+            this.hand.push(card);
+            return true;
+        }
+        return false;
     }
 
     playCard(cardIndex, enemy) {
         if (cardIndex < 0 || cardIndex >= this.hand.length) {
-            console.log("Invalid card index");
-            return;
+            return false;
         }
 
         const card = this.hand[cardIndex];
         card.effect(this, enemy);
         this.hand.splice(cardIndex, 1);
+        return true;
     }
 }
 
 class Enemy {
-    constructor(name, health) {
+    constructor(name, health, maxHealth = health) {
         this.name = name;
         this.health = health;
+        this.maxHealth = maxHealth;
+    }
+
+    performAttack(player) {
+        const damage = Math.floor(Math.random() * 8) + 3;
+        player.health -= damage;
+        addLog(`${this.name} attacks for ${damage} damage!`);
+        return damage;
     }
 }
 
@@ -40,17 +56,44 @@ class Enemy {
 function attackEffect(player, enemy) {
     const damage = Math.floor(Math.random() * 10) + 1;
     enemy.health -= damage;
-    console.log(`${player.name} attacks ${enemy.name} for ${damage} damage!`);
+    addLog(`${player.name} attacks ${enemy.name} for ${damage} damage!`);
+}
+
+function strongAttackEffect(player, enemy) {
+    const damage = Math.floor(Math.random() * 15) + 5;
+    enemy.health -= damage;
+    addLog(`${player.name} performs a STRONG ATTACK for ${damage} damage!`);
 }
 
 function healEffect(player, enemy) {
     const healAmount = Math.floor(Math.random() * 10) + 1;
-    player.health += healAmount;
-    console.log(`${player.name} heals for ${healAmount} health!`);
+    const oldHealth = player.health;
+    player.health = Math.min(player.health + healAmount, player.maxHealth);
+    const actualHeal = player.health - oldHealth;
+    addLog(`${player.name} heals for ${actualHeal} health!`);
 }
 
-function showStatus(player, enemy) {
-    console.log(`${player.name}: ${player.health} HP | ${enemy.name}: ${enemy.health} HP`);
+// Game state
+let gameState = {
+    turn: 0,
+    isGameOver: false,
+    winner: null,
+    maxTurns: 20
+};
+
+function addLog(message) {
+    const logElement = document.getElementById("game-log");
+    if (logElement) {
+        const logEntry = document.createElement("div");
+        logEntry.textContent = message;
+        logEntry.className = "log-entry";
+        logElement.insertBefore(logEntry, logElement.firstChild);
+        
+        // Keep only last 10 entries
+        while (logElement.children.length > 10) {
+            logElement.removeChild(logElement.lastChild);
+        }
+    }
 }
 
 // Deck class
@@ -70,26 +113,42 @@ class Deck {
         this.cards.splice(randomIndex, 1);
         return card;
     }
+
+    shuffle(count) {
+        // Add copies back to deck for multiple rounds
+        for (let i = 0; i < count; i++) {
+            this.addCard(new Card("Attack", attackEffect, 5, "attack"));
+            this.addCard(new Card("Attack", attackEffect, 5, "attack"));
+            this.addCard(new Card("Heal", healEffect, 8, "heal"));
+            this.addCard(new Card("Strong Attack", strongAttackEffect, 12, "attack"));
+        }
+    }
 }
 
 // Initialize game
-const player = new Player("Hero", 30);
-const enemy = new Enemy("Goblin", 20);
+const player = new Player("Hero", 35, 35);
+const enemy = new Enemy("Goblin", 25, 25);
 
 const deck = new Deck();
-deck.addCard(new Card("Attack", attackEffect));
-deck.addCard(new Card("Attack", attackEffect));
-deck.addCard(new Card("Heal", healEffect));
-deck.addCard(new Card("Strong Attack", (player, enemy) => {
-    const damage = Math.floor(Math.random() * 15) + 5;
-    enemy.health -= damage;
-    console.log(`${player.name} performs a strong attack on ${enemy.name} for ${damage} damage!`);
-}));
+deck.addCard(new Card("Attack", attackEffect, 5, "attack"));
+deck.addCard(new Card("Attack", attackEffect, 5, "attack"));
+deck.addCard(new Card("Heal", healEffect, 8, "heal"));
+deck.addCard(new Card("Strong Attack", strongAttackEffect, 12, "attack"));
+deck.shuffle(2); // Add more cards
 
 // UI Updates
 function updateStats() {
-    document.getElementById("player-health").textContent = player.health;
-    document.getElementById("enemy-health").textContent = enemy.health;
+    document.getElementById("player-health").textContent = `${player.health}/${player.maxHealth}`;
+    document.getElementById("enemy-health").textContent = `${enemy.health}/${enemy.maxHealth}`;
+    document.getElementById("turn-counter").textContent = `Turn: ${gameState.turn}/${gameState.maxTurns}`;
+    document.getElementById("hand-size").textContent = `Hand: ${player.hand.length}/${player.maxHandSize}`;
+    document.getElementById("deck-size").textContent = `Deck: ${deck.cards.length}`;
+    
+    // Update health bar colors
+    const playerHealthPercent = (player.health / player.maxHealth) * 100;
+    const enemyHealthPercent = (enemy.health / enemy.maxHealth) * 100;
+    document.getElementById("player-health").style.color = playerHealthPercent > 50 ? "#4ade80" : playerHealthPercent > 20 ? "#fbbf24" : "#ef4444";
+    document.getElementById("enemy-health").style.color = enemyHealthPercent > 50 ? "#4ade80" : enemyHealthPercent > 20 ? "#fbbf24" : "#ef4444";
 }
 
 function renderHand() {
@@ -105,46 +164,110 @@ function renderHand() {
         cardImage.alt = card.name;
         
         const cardName = document.createElement("p");
+        cardName.className = "card-name";
         cardName.textContent = card.name;
+        
+        const cardDamage = document.createElement("p");
+        cardDamage.className = "card-damage";
+        cardDamage.textContent = card.type === "heal" ? `Heal: ${card.damage}` : `Dmg: ${card.damage}`;
         
         cardElement.appendChild(cardImage);
         cardElement.appendChild(cardName);
+        cardElement.appendChild(cardDamage);
         cardElement.onclick = () => playCardHandler(index);
         cardsContainer.appendChild(cardElement);
     });
 }
 
 function playCardHandler(cardIndex) {
-    if (enemy.health <= 0 || player.health <= 0) {
-        alert("Game Over!");
+    if (gameState.isGameOver) {
+        alert("Game Over! Refresh to play again.");
         return;
     }
-    player.playCard(cardIndex, enemy);
+    
+    if (!player.playCard(cardIndex, enemy)) {
+        return;
+    }
+
+    gameState.turn++;
     updateStats();
     renderHand();
-    checkGameEnd();
+    
+    if (checkGameEnd()) {
+        return;
+    }
+
+    // Enemy attacks after a short delay
+    setTimeout(() => {
+        if (!gameState.isGameOver) {
+            enemy.performAttack(player);
+            updateStats();
+            
+            if (checkGameEnd()) {
+                return;
+            }
+        }
+    }, 500);
 }
 
 function drawCardHandler() {
-    if (deck.cards.length === 0) {
-        alert("No more cards in deck!");
+    if (gameState.isGameOver) {
+        alert("Game Over! Refresh to play again.");
         return;
     }
+
+    if (player.hand.length >= player.maxHandSize) {
+        addLog("Hand is full! Play a card first.");
+        return;
+    }
+
+    if (deck.cards.length === 0) {
+        addLog("No more cards in deck!");
+        return;
+    }
+
     const card = deck.drawCard();
     if (card) {
-        player.drawCard(card);
+        if (!player.drawCard(card)) {
+            addLog("Hand is full!");
+            deck.addCard(card);
+            return;
+        }
+        addLog(`Drew: ${card.name}`);
         renderHand();
+        updateStats();
     }
 }
 
 function checkGameEnd() {
+    let gameOver = false;
+    let message = "";
+
     if (player.health <= 0) {
-        alert("Game Over! Enemy wins!");
-        location.reload();
+        gameState.isGameOver = true;
+        gameState.winner = "enemy";
+        message = `Game Over! ${enemy.name} wins!\n\nSurvived ${gameState.turn} turns.`;
     } else if (enemy.health <= 0) {
-        alert("Victory! You defeated the enemy!");
-        location.reload();
+        gameState.isGameOver = true;
+        gameState.winner = "player";
+        message = `Victory! ${player.name} defeated ${enemy.name}!\n\nWon in ${gameState.turn} turns.`;
+    } else if (gameState.turn >= gameState.maxTurns) {
+        gameState.isGameOver = true;
+        gameState.winner = "draw";
+        message = `Time's up! Game Draw!\n\nPlayer health: ${player.health} vs Enemy health: ${enemy.health}`;
     }
+
+    if (gameState.isGameOver) {
+        const drawBtn = document.getElementById("drawCardBtn");
+        drawBtn.disabled = true;
+        drawBtn.style.opacity = "0.5";
+        
+        addLog("=== " + (gameState.winner === "player" ? "VICTORY!" : gameState.winner === "enemy" ? "DEFEAT!" : "DRAW!") + " ===");
+        alert(message);
+        return true;
+    }
+    
+    return false;
 }
 
 // Event listeners
@@ -153,6 +276,8 @@ document.getElementById("drawCardBtn").addEventListener("click", drawCardHandler
 // Initial render
 updateStats();
 renderHand();
+addLog("Game started! Draw cards and play them wisely.");
 player.drawCard(deck.drawCard());
 player.drawCard(deck.drawCard());
-player.drawCard(deck.drawCard());
+renderHand();
+updateStats();     
