@@ -67,3 +67,37 @@ player.playCard(0, enemy);
 showStatus(player, enemy);
 player.playCard(0, enemy);
 showStatus(player, enemy);  
+
+// create a deck sistem with multiple card with different powers and effects as cards object, the player can draw cards from the deck and play them against the enemy, the game should end when either the player or the enemy's health reaches 0.
+
+class Deck {
+    constructor() {
+        this.cards = [];
+    }
+    
+    addCard(card) {
+        this.cards.push(card);
+    }
+
+    drawCard() {
+        if (this.cards.length === 0) {
+            return null;
+        }
+        return this.cards.pop();
+    }
+}
+
+// Create a deck and add cards to it
+const deck = new Deck();
+deck.addCard(new Card("Attack", attackEffect));
+deck.addCard(new Card("Heal", healEffect));
+deck.addCard(new Card("Strong Attack", (player, enemy) => {
+    const damage = Math.floor(Math.random() * 15) + 5;
+    enemy.health -= damage;
+    console.log(`${player.name} performs a strong attack on ${enemy.name} for ${damage} damage!`);
+}));
+
+// Player draws cards from the deck
+player.drawCard(deck.drawCard());
+player.drawCard(deck.drawCard());
+player.drawCard(deck.drawCard());
